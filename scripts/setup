@@ -1,0 +1,82 @@
+#!/bin/bash
+#
+# Simple script to configure LKDDT workdir
+#
+
+# Generate LKDDT workdir variable
+LKDDT=`pwd`/..
+
+# Generate resources directory
+function gen_rsc {
+	_gen_rsc_bootlin
+	_gen_rsc_ti
+}
+
+# Download bootlin resources
+function _gen_rsc_bootlin {
+	mkdir -p $LKDDT/rsc/bootlin
+	pushd $LKDDT/rsc/bootlin
+	wget https://bootlin.com/doc/training/linux-kernel/linux-kernel-slides.pdf
+	wget https://bootlin.com/doc/training/linux-kernel/linux-kernel-labs.tar.xz
+	wget https://bootlin.com/doc/training/linux-kernel/linux-kernel-labs.pdf
+	wget https://bootlin.com/doc/training/linux-kernel/linux-kernel-agenda.pdf
+	wget https://bootlin.com/doc/training/linux-kernel/linux-kernel-agenda-fr.pdf
+	wget https://bootlin.com/doc/training/linux-kernel/README.txt
+        wget https://bootlin.com/labs/doc/nunchuk.pdf
+        wget https://bootlin.com/labs/doc/README.txt -O README.txt.nunchuk
+	popd
+}
+
+# Download ti resources
+function _gen_rsc_ti {
+	mkdir -p $LKDDT/rsc/ti
+	pushd $LKDDT/rsc/ti
+	wget https://github.com/CircuitCo/BeagleBone-Black/raw/master/BBB_SRM.pdf
+	wget http://www.ti.com/lit/ds/symlink/am3359.pdf
+	wget http://www.ti.com/lit/ug/spruh73p/spruh73p.pdf
+	popd
+}
+
+# Download required packages for LKDDT
+function install_packages {
+	sudo apt-get install git gitk git-email \
+	  picocom \
+	  tftpd-hpa \
+	  qt5-default g++ pkg-config \
+	  libqt4-dev \
+	  gcc-arm-linux-gnueabi \
+	  nfs-kernel-server
+}
+
+# Add $USER to dialout group
+function adduser_to_dialout {
+	sudo adduser $USER dialout
+}
+
+# Setup bootlin lkddt labs
+function setup_lkddt_labs {
+	pushd $LKDDT/rsc/bootlin
+	tar xvf linux-kernel-labs.tar.xz -C $LKDDT/
+	popd
+}
+
+# Download Linux kernel src tree + stable
+function setup_linuxkernel {
+        mkdir -p $LKDDT/linux-kernel-labs/src
+        pushd $LKDDT/linux-kernel-labs/src
+        git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        cd linux/
+        git remote add stable git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+        git fetch stable
+        git checkout -b 4.9.y stable/linux-4.9.y
+	popd
+}
+
+# Execute setup steps:
+gen_rsc
+install_packages
+adduser_to_dialout
+
+# Prepare lkddt sources
+setup_lkddt_labs
+setup_linuxkernel
