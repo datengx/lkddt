@@ -9,6 +9,7 @@ LKDDT=`pwd`/..
 # Generate resources directory
 function gen_rsc {
 	_gen_rsc_bootlin
+	_gen_rsc_bootlin_solutions
 	_gen_rsc_ti
 }
 
@@ -25,6 +26,42 @@ function _gen_rsc_bootlin {
         wget https://bootlin.com/labs/doc/nunchuk.pdf
         wget https://bootlin.com/labs/doc/README.txt -O README.txt.nunchuk
 	popd
+}
+
+
+# Download bootlin solutions
+function _gen_rsc_bootlin_solutions {
+	local sol1="$LKDDT/rsc/bootlin/solutions/1-modules"
+	local sol2a="$LKDDT/rsc/bootlin/solutions/2a-nunchuk-device-model"
+	local sol2b="$LKDDT/rsc/bootlin/solutions/2b-nunchuk-i2c-communication"
+	local sol2c="$LKDDT/rsc/bootlin/solutions/2c-nunchuk-input-interface"
+	local sol3a="$LKDDT/rsc/bootlin/solutions/3a-serial-iomem"
+	local sol3b="$LKDDT/rsc/bootlin/solutions/3b-serial-output"
+	local sol3c="$LKDDT/rsc/bootlin/solutions/3c-serial-input-output"
+
+	mkdir -p $sol1; pushd $sol1
+	wget http://bootlin.com/labs/solutions/hojlok/hello_version.c
+
+	mkdir -p $sol2a; cd $sol2a
+	wget https://bootlin.com/labs/solutions/rilekt/am335x-customboneblack.dts
+	wget https://bootlin.com/labs/solutions/rilekt/nunchuk.c
+
+	mkdir -p $sol2b; cd $sol2b
+	wget https://bootlin.com/labs/solutions/ecvoir/am335x-customboneblack.dts
+	wget https://bootlin.com/labs/solutions/ecvoir/nunchuk.c
+
+	mkdir -p $sol2c; cd $sol2c
+	wget https://bootlin.com/labs/solutions/uxlyjr/nunchuk.c
+
+	mkdir -p $sol3a; cd $sol3a
+	wget https://bootlin.com/labs/solutions/oiryis/am335x-customboneblack.dts
+	wget https://bootlin.com/labs/solutions/oiryis/feserial.c
+
+	mkdir -p $sol3b; cd $sol3b
+	wget https://bootlin.com/labs/solutions/oontub/feserial.c
+
+	mkdir -p $sol3c; cd $sol3c
+	wget https://bootlin.com/labs/solutions/etmief/feserial.c
 }
 
 # Download ti resources
